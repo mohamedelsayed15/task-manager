@@ -10,7 +10,19 @@ router.post('/createUser', async (req, res) => {
         await user.save()
         res.send(user)
     }
-    catch (e) { res.status(400).send(e)}
+    catch (e) {
+        res.status(400).send(e)
+        console.error(e)
+    }
+})
+router.post('/login', async () => { 
+    try { 
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        if (!user) { return res.status(404).send("user were not found ")}
+    } catch (e) { 
+        res.send(e)
+        console.error(e)
+    }
 })
 router.get('/getUsers', async (req, res) => { 
 
@@ -41,20 +53,28 @@ router.patch('/update/:id', async (req, res) => {
         if (validUpdate === false) { 
             return res.status(404).send({ ERROR: "Invalid Updates!" })
         }
-        const user = await User.findByIdAndUpdate(req.params.id, req.body,
-            {
-                new: true, // returns the updated data
-                runValidators:true // runs validation for the update
-            })
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body,
+        //     {
+        //         new: true, // returns the updated data
+        //         runValidators:true // runs validation for the update
+        //     })
+        const user = await User.findById(req.params.id)
+
+        updates.forEach( update => user[update]=req.body[update] )
+
+
+        await user.save()
+
         if (!user) {return res.status(404).send('user were not found') }
         res.send(user)
     } catch (e) { 
         res.status(500).send(e)
+        console.error(e)
     }
 })
 router.delete('/:id', async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
+        const user = await  User.findByIdAndDelete(req.params.id)
         if (!user) { return res.status(404).send({ ERROR: "user were not found" }) }
         res.send(user)
 
