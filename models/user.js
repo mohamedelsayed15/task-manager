@@ -28,8 +28,18 @@ const schema = new mongoose.Schema({
 
 })
 schema.statics.findByCredentials = async (email, password) => {
+
+    const user = await User.findOne({ email })
+
+    if (!user) { throw new Error('unable to find user') }
     
-    const user = await User.findOne({email})
+
+    const isMatch = await bcrypt.compare(user.password, password)
+
+    if (!isMatch) { throw new Error('Unable to login') }
+
+
+    return user
 }
 schema.pre('save', async function (next) { 
 

@@ -1,0 +1,3 @@
+mongoDB notes
+
+if changing schema one it was built u will have to whipe out the database inorder for changes to work

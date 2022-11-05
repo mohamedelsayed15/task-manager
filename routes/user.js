@@ -18,9 +18,11 @@ router.post('/createUser', async (req, res) => {
 router.post('/login', async () => { 
     try { 
         const user = await User.findByCredentials(req.body.email, req.body.password)
-        if (!user) { return res.status(404).send("user were not found ")}
+        
+        res.send(user)
+
     } catch (e) { 
-        res.send(e)
+        res.status(400).send(e)
         console.error(e)
     }
 })
