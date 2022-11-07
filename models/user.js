@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
 
 
 const schema = new mongoose.Schema({
@@ -33,16 +34,16 @@ schema.statics.findByCredentials = async (email, password) => {
 
     if (!user) { throw new Error('unable to find user') }
 
-
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) { throw new Error('Unable to login') }
-
 
     return user
 }
 schema.pre('save', async function (next) { 
 
+
+    console.log(this.isModified('password'))
     if (this.isModified('password')) { 
 
         this.password = await bcrypt.hash(this.password,8)
