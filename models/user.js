@@ -52,12 +52,6 @@ schema.pre('save', async function (next) {
 
     next()
 })
-
-
-
-
-
-
 const User = mongoose.model('User', schema)
 
 module.exports= User
