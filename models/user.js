@@ -26,7 +26,6 @@ const schema = new mongoose.Schema({
             if (value < 0) { throw new Error('age must be a positive number') }
         }
     }
-
 })
 schema.statics.findByCredentials = async (email, password) => {
 

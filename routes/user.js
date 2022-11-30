@@ -49,9 +49,11 @@ router.get('/:id', async (req, res) => {
 })
 router.patch('/update/:id', async (req, res) => { 
     try {
-        const updates = Object.keys(req.body)
+        const updates = Object.keys(req.body) // transferes the names of properties of an object into an array
         const allowedUpdates = ['name', 'password', 'email', 'age']
+        // every will return false if any of the returns is false
         const validUpdate = updates.every((update) => {
+            // here we take the body and check if each is in the allowed updates
             return allowedUpdates.includes(update)
         })
         if (validUpdate === false) { 
