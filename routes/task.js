@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const Task = require('../models/task')
-
 //=========================================================
 router.post('/createTask', async (req, res) => { 
     try {
@@ -33,7 +32,7 @@ router.get('/taskID/:id', async (req, res) => {
     }
 })
 router.patch('/:id', async (req, res) => {
-    try {
+   try{
         const updates = Object.keys(req.body)
         const allowedUpdates = ["description", "completed"]
         const validupdates = updates.every(update => allowedUpdates.includes(update))
@@ -60,7 +59,6 @@ router.delete('/:id', async (req, res) => {
     } catch (e) { 
         res.status(500).send(e)
     }
-
 })
 //=========================================================
 module.exports = router

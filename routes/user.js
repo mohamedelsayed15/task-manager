@@ -2,9 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
 const User = require('../models/user')
-
 //=============================================
-
 router.post('/createUser', async (req, res) => { 
     try {
 
@@ -20,8 +18,9 @@ router.post('/createUser', async (req, res) => {
 router.post('/login', async (req,res) => { 
     try { 
         const user = await User.findByCredentials(req.body.email, req.body.password)
+        const token = await user.genAuthToken()
         
-        res.send(user)
+        res.send({user , token})
 
     } catch (e) { 
         res.status(400).send(e)
@@ -66,12 +65,14 @@ router.patch('/update/:id', async (req, res) => {
         //     })
         const user = await User.findById(req.params.id)
 
+        if (!user) { return res.status(404).send('unable to find user') }
+        
         updates.forEach( update => user[update]=req.body[update] )
 
 
         await user.save()
 
-        if (!user) {return res.status(404).send('user were not found') }
+        
         res.send(user)
     } catch (e) { 
         res.status(500).send(e)
@@ -81,7 +82,7 @@ router.patch('/update/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const user = await  User.findByIdAndDelete(req.params.id)
-        if (!user) { return res.status(404).send({ ERROR: "user were not found" }) }
+        if (!user) { return res.status(404).send({ ERROR: "unable to find user" }) }
         res.send(user)
 
     } catch (e) { 
