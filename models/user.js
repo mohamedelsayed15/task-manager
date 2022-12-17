@@ -26,7 +26,13 @@ const schema = new mongoose.Schema({
         validate(value) {
             if (value < 0) { throw new Error('age must be a positive number') }
         }
-    }
+    },
+    token: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 })
 //login by credentials
 schema.statics.findByCredentials = async (email, password) => {
@@ -54,8 +60,12 @@ schema.pre('save', async function (next) { // provided by mongoose
 schema.methods.genAuthToken = async function () { 
     
     const token = await jwt.sign({ id: this._id.toString() }, 'hi')
+    this.token = this.token.concat({ token })
+    await this.save()
+    
 
     return token
 }
 const User = mongoose.model('User', schema)
+
 module.exports= User
