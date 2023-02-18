@@ -15,20 +15,19 @@ Ctrl+shift+L select all occurance
 //-------------------------------------
 const taskRoutes = require('./routes/task')
 const userRoutes = require('./routes/user')
+const auth = require('./middleware/auth')
 const app = express();
-const port = process.env.PORT||3000
-app.use(express.json()); //parser
+const port = 3000
+app.use(express.json({limit : "500kb"})); //parser
 //-------------------------------------
-// app.use((req, res, next) => {  //middleware runs to prevent rest of the to run
-//     res.status(503).send("under maintenance")
 
-// })
 
 // will the code go through the rest of the the file if request doesnt start with /user?
 app.use('/user', userRoutes)
 app.use('/task', taskRoutes)
 app.use(userRoutes)
 app.use(taskRoutes)
+
 
 //--------------------------------------------------------
 app.use('/*', (req, res) => { //ERROR 404

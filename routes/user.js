@@ -2,6 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
 const User = require('../models/user')
+const auth = require('../middleware/auth')
 //=============================================
 router.post('/createUser', async (req, res) => { 
     try {
@@ -29,14 +30,13 @@ router.post('/login', async (req,res) => {
         console.error(e)
     }
 })
-router.get('/getUsers', async (req, res) => { 
+router.post('/logout',auth, async (req, res) => {
+    
+    
+ })
+router.get('/me', auth ,async (req, res) => { 
 
-    try {
-        const users = await User.find({})
-        res.send(users) 
-    } catch (e) { 
-        res.status(500).send()
-    }
+    res.send(req.user)
 })
 router.get('/:id', async (req, res) => { 
 

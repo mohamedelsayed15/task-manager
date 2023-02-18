@@ -59,7 +59,7 @@ schema.pre('save', async function (next) { // provided by mongoose
 })
 schema.methods.genAuthToken = async function () { 
     
-    const token = await jwt.sign({ id: this._id.toString() }, 'hi')
+    const token = await jwt.sign({ _id: this._id.toString() }, 'hi')
     this.token = this.token.concat({ token })
     await this.save()
     

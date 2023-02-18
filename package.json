@@ -15,6 +15,7 @@
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "express": "^4.18.1",
+    "fuzzyset": "^1.0.7",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.8.1",
     "mongoose": "^6.5.2",
