@@ -27,7 +27,7 @@ const schema = new mongoose.Schema({
             if (value < 0) { throw new Error('age must be a positive number') }
         }
     },
-    token: [{
+    tokens: [{
         token: {
             type: String,
             required: true
@@ -41,12 +41,25 @@ schema.statics.findByCredentials = async (email, password) => {
 
     if (!user) { throw new Error('unable to find user') }
 
+
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) { throw new Error('unable to find user') }
 
     return user
 }
+//filtering user data 
+//toJSON retrieves the object the shape u want
+
+schema.methods.toJSON = function () {
+    
+        const userObject = this.toObject()
+        delete userObject.password
+        delete userObject.tokens
+        return userObject
+    
+}
+
 //hashing password before use save()
 schema.pre('save', async function (next) { // provided by mongoose
 
@@ -60,12 +73,13 @@ schema.pre('save', async function (next) { // provided by mongoose
 schema.methods.genAuthToken = async function () { 
     
     const token = await jwt.sign({ _id: this._id.toString() }, 'hi')
-    this.token = this.token.concat({ token })
+    this.tokens = this.tokens.concat({ token })
     await this.save()
     
 
     return token
 }
+
 const User = mongoose.model('User', schema)
 
 module.exports= User

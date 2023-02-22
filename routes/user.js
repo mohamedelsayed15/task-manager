@@ -11,7 +11,7 @@ router.post('/createUser', async (req, res) => {
         await user.save()
         const token = await user.genAuthToken()
         
-        res.send({ user, token })
+        res.status(201).send({ user, token })
     }
     catch (e) {
         res.status(400).send(e)
@@ -20,35 +20,36 @@ router.post('/createUser', async (req, res) => {
 })
 router.post('/login', async (req,res) => { 
     try { 
-        const user = await User.findByCredentials(req.body.email, req.body.password)
+        const user = await User.findByCredentials(req.body.email, req.body.password) 
         const token = await user.genAuthToken()
-        
         res.send({user , token})
-
     } catch (e) { 
-        res.status(400).send(e)
-        console.error(e)
+        res.status(404).send({ Error: "couldnt find user" })
+        
     }
 })
-router.post('/logout',auth, async (req, res) => {
-    
-    
- })
+router.post('/logout', auth, async (req, res) => {
+    try { 
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token )
+        await req.user.save()
+        res.send('logged out')
+    } catch (e) {
+        res.send(e)
+    }
+})
+router.post('/supermeLogout', auth, async (req, res) => {
+    try { 
+        req.user.tokens = []
+        await req.user.save()
+        res.send('logged out')
+    } catch (e) {
+        res.send(e)
+    }
+}) 
 router.get('/me', auth ,async (req, res) => { 
-
     res.send(req.user)
 })
-router.get('/:id', async (req, res) => { 
-
-    try {
-        const user = await User.findById(req.params.id)
-        if (!user) { res.status(404).send() }
-        res.send(user)
-    } catch (e) { 
-        res.status(500).send(e)
-    }
-})
-router.patch('/update/:id', async (req, res) => { 
+router.patch('/update/me',auth ,async (req, res) => { 
     try {
         const updates = Object.keys(req.body) // transferes the names of properties of an object into an array
         const allowedUpdates = ['name', 'password', 'email', 'age']
@@ -65,26 +66,19 @@ router.patch('/update/:id', async (req, res) => {
         //         new: true, // returns the updated data
         //         runValidators:true // runs validation for the update
         //     })
-        const user = await User.findById(req.params.id)
 
-        if (!user) { return res.status(404).send('unable to find user') }
-        
-        updates.forEach( update => user[update]=req.body[update] )
-
-
-        await user.save()
-
-        
-        res.send(user)
+        updates.forEach( update => req.user[update]=req.body[update] )
+        await req.user.save()
+        res.send(req.user)
     } catch (e) { 
         res.status(500).send(e)
         console.error(e)
     }
 })
-router.delete('/:id', async (req, res) => {
+router.delete('/me',auth,async (req, res) => {
     try {
-        const user = await  User.findByIdAndDelete(req.params.id)
-        if (!user) { return res.status(404).send({ ERROR: "unable to find user" }) }
+        //delete user
+        const user = await  User.findByIdAndDelete(req.user._id)
         res.send(user)
 
     } catch (e) { 

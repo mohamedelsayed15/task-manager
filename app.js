@@ -15,7 +15,6 @@ Ctrl+shift+L select all occurance
 //-------------------------------------
 const taskRoutes = require('./routes/task')
 const userRoutes = require('./routes/user')
-const auth = require('./middleware/auth')
 const app = express();
 const port = 3000
 app.use(express.json({limit : "500kb"})); //parser
@@ -39,3 +38,12 @@ app.listen(port, () => {
     console.log(`server is up on port :${port}`)
 
 })
+const Task = require('./models/task')
+
+const main = async () => {
+    
+    const task = await Task.findById('63f4f496c7d5e6cd140f5993')
+    console.log(task.owner.toString())
+    
+}
+main()
