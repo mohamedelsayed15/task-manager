@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 const User = require('../models/user')
 const auth = require('../middleware/auth')
+const Task = require('../models/task')
 //=============================================
 router.post('/createUser', async (req, res) => { 
     try {
@@ -78,8 +79,13 @@ router.patch('/update/me',auth ,async (req, res) => {
 router.delete('/me',auth,async (req, res) => {
     try {
         //delete user
-        const user = await  User.findByIdAndDelete(req.user._id)
-        res.send(user)
+        /*
+        //first approach 
+        await Task.deleteMany({ owner: req.user._id })
+        const user = await User.findByIdAndDelete(req.user._id)
+        */
+        await req.user.remove()
+        res.send(req.user)
 
     } catch (e) { 
         res.status(500).send(e)

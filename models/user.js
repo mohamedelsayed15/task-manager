@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
-
+const Task = require('./task')
 /*note about mongodb if u are altering schema
 once it was built u gonna have to delete the collection*/
 const schema = new mongoose.Schema({
@@ -68,6 +68,12 @@ schema.pre('save', async function (next) { // provided by mongoose
 
         this.password = await bcrypt.hash(this.password,8)
     }  
+    next()
+})
+//deleting tasks before a user is removed
+schema.pre('remove', async function (next) { 
+
+    await Task.deleteMany({owner : this._id})
     next()
 })
 schema.methods.genAuthToken = async function () { 
