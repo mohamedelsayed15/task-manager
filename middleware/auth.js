@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
     try {
         const headerToken = req.header('Authorization').replace('Bearer ', '')
         const decoded = jwt.verify(headerToken, 'hi')
-        console.log(decoded)
+        //console.log(decoded)
         //find the user
         //const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
         //find by id is better than find one

@@ -29,7 +29,7 @@ router.get('/myTasks', auth , async (req, res) => { //NOTE ME
         const task = await Task.find({ owner: req.user._id })
 
         //not find returns an array so we dont use ! to check if its empty
-         if (task.length === 0) {return res.status(404).send({ Error: "not found" })}
+        if (task.length === 0) {return res.status(404).send([])}
         
         res.send(task)
     } catch (e) { 
@@ -51,13 +51,13 @@ router.get('/:_id', auth, async (req, res) => { //NOTE ME
 
 })
 
-router.patch('/alterTask', auth,async (req, res) => {
+router.patch('/alterTask/:_id', auth,async (req, res) => {
    try{
         const updates = Object.keys(req.body)
         const allowedUpdates = ["title","description", "completed"]
         const validupdates = updates.every(update => allowedUpdates.includes(update))
         if (validupdates === false ) { return res.status(404).send( { ERROR: "invalid updates!" }) }
-        const task = await Task.findById(req.params.id)
+        const task = await Task.findOne({ _id: req.params._id, owner: req.user._id })
 
         updates.forEach(update => task[update] = req.body[update])
 
@@ -69,9 +69,9 @@ router.patch('/alterTask', auth,async (req, res) => {
         console.error(e)
     }
 })
-router.delete('/:id', async (req, res) => {
+router.delete('/:_id',auth ,async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id)
+        const task = await Task.findOneAndDelete({ _id: req.params._id, owner: req.user._id })
         if (!task) { 
             return res.status(404).send({ERROR: "task were not found"})
         }
