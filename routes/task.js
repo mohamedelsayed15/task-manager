@@ -24,7 +24,6 @@ router.post('/createTask',auth,async (req, res) => {
 // the application will go and find the one with id as match and then 
 // TAKE THE ID AS "myTasks" which will cause an error
 // so U MAKE THE ONE WITH ID BELOW THE OTHER ONE, TY PLS DONT MAKE THIS MISTAKE AGAIN
-
 router.get('/myTasks', auth , async (req, res) => { //NOTE ME
     try {
         const task = await Task.find({ owner: req.user._id })
