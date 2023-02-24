@@ -33,7 +33,16 @@ const schema = new mongoose.Schema({
             required: true
         }
     }]
+}, {
+    timestamps: true
 })
+
+schema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField:'owner'
+})
+
 //login by credentials
 schema.statics.findByCredentials = async (email, password) => {
 
@@ -76,6 +85,9 @@ schema.pre('remove', async function (next) {
     await Task.deleteMany({owner : this._id})
     next()
 })
+
+
+
 schema.methods.genAuthToken = async function () { 
     
     const token = await jwt.sign({ _id: this._id.toString() }, 'hi')

@@ -5,9 +5,9 @@ const User = require('../models/user')
 const auth = require('../middleware/auth')
 const Task = require('../models/task')
 //=============================================
+//sign up
 router.post('/createUser', async (req, res) => { 
     try {
-
         const user = await new User(req.body)
         await user.save()
         const token = await user.genAuthToken()
@@ -23,8 +23,10 @@ router.post('/login', async (req,res) => {
     try { 
         const user = await User.findByCredentials(req.body.email, req.body.password) 
         const token = await user.genAuthToken()
+        
         res.send({user , token})
     } catch (e) { 
+        console.log(e)
         res.status(404).send({ Error: "couldnt find user" })
         
     }

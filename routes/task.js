@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth')
 const Task = require('../models/task')
-const { ObjectId } = require('mongodb')
 //=========================================================
 router.post('/createTask',auth,async (req, res) => { 
     try {
@@ -24,14 +23,34 @@ router.post('/createTask',auth,async (req, res) => {
 // the application will go and find the one with id as match and then 
 // TAKE THE ID AS "myTasks" which will cause an error
 // so U MAKE THE ONE WITH ID BELOW THE OTHER ONE, TY PLS DONT MAKE THIS MISTAKE AGAIN
-router.get('/myTasks', auth , async (req, res) => { //NOTE ME
+// query ?completed='true'
+// query ?limit=10&skip=30
+// query ?sortBy=createdAt:asc
+// query ?sortBy=createdAt&order=-1
+router.get('/myTasks', auth, async (req, res) => { //NOTE ME
     try {
-        const task = await Task.find({ owner: req.user._id })
+        const match = {}
 
-        //not find returns an array so we dont use ! to check if its empty
-        if (task.length === 0) {return res.status(404).send([])}
-        
-        res.send(task)
+    if (req.query.completed) { 
+        match.completed = req.query.completed ==='true'
+    }
+    const sort = {}
+        if (req.query.sortBy && req.query.order) { 
+        //we use bracket notation because we deal with a string in sortby
+        // so if we wanna assign a string value to object we use []
+        sort[req.query.sortBy] = parseInt(req.query.order)
+        }
+
+        await req.user.populate({
+            path: 'tasks',
+            match, 
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort
+            }
+        })
+        res.send(req.user.tasks)
     } catch (e) { 
         res.status(500).send()
         console.log(e)

@@ -10,14 +10,12 @@ const schema = new mongoose.Schema({
 
     owner: { type: mongoose.Schema.Types.ObjectId, required: true , ref: 'User'}
 
+}, {
+    timestamps:true
 })
 
     
-schema.pre('save', async function (next) { 
-    
 
-    next()
-})
 const Task = mongoose.model('Task', schema)
 
 module.exports= Task
