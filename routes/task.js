@@ -34,8 +34,9 @@ router.get('/myTasks', auth, async (req, res) => { //NOTE ME
     if (req.query.completed) { 
         match.completed = req.query.completed ==='true'
     }
-    const sort = {}
-        if (req.query.sortBy && req.query.order) { 
+        const sort = {}
+        if (req.query.order !== '1') { req.query.order = -1 }
+        if (req.query.sortBy ) { 
         //we use bracket notation because we deal with a string in sortby
         // so if we wanna assign a string value to object we use []
         sort[req.query.sortBy] = parseInt(req.query.order)
