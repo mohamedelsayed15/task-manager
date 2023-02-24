@@ -24,9 +24,9 @@ app.use(express.json({limit : "500kb"})); //parser
 // will the code go through the rest of the the file if request doesnt start with /user?
 app.use('/user', userRoutes)
 app.use('/task', taskRoutes)
-app.use(userRoutes)
-app.use(taskRoutes)
-
+//which code is better in terms of performance
+//app.use(userRoutes)
+//app.use(taskRoutes)
 
 //--------------------------------------------------------
 app.use('/*', (req, res) => { //ERROR 404
