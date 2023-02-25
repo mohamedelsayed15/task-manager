@@ -4,6 +4,8 @@ const router = express.Router()
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const Task = require('../models/task')
+const multer = require('multer')
+const Pic = require('../models/profilePicture')
 //=============================================
 //Signup
 router.post('/createUser', async (req, res) => { 
@@ -20,6 +22,54 @@ router.post('/createUser', async (req, res) => {
         res.status(400).send(e)
         console.error(e)
     }
+})
+//multer
+const upload = multer({
+    //dest: 'profilePicture',
+    limits: {
+        fileSize: 5242880 , //1024 * 1024* 1.5 //5mb
+        files: 1,
+    },
+    fileFilter(req, file, cb) {
+
+        if (!file.originalname.match(/\.(jpg|png|gif|jpeg)$/))
+        {
+            cb(new Error('file is not supported'), false) //reject
+        }
+
+        cb(null,true)//accept
+    }
+})
+//Profile picture
+router.post('/me/profilePicture', auth, upload.single('profilePicture'), async (req, res) => {
+    
+    const pic = await new Pic({
+        profilePicture: req.file.buffer,
+        owner:req.user._id
+    })
+
+    await pic.save()
+
+    if (!req.file) { throw new Error('no file were uploaded') }
+    
+    res.send()
+
+}, (error, req, res, next) => { 
+
+    res.status(400).send({ Error: error.message })
+    
+})
+//delete profile picture
+router.get('/delete/profilePicture', auth, async (req, res) => { 
+    
+    const pic = await Pic.findOneAndDelete({ owner: req.user._id })
+    
+    res.send({message:"deleted"})
+
+}, (error, req, res, next) => { 
+
+    res.status(400).send({ Error: error.message })
+    
 })
 //Login
 router.post('/login', async (req,res) => { 
@@ -63,9 +113,21 @@ router.post('/supermeLogout', auth, async (req, res) => {
 }) 
 //Profile
 router.get('/me', auth, async (req, res) => { 
-    
-    res.send(req.user)
+    try {
 
+        await req.user.populate({
+
+            path: 'pic'
+            
+        })
+    
+        res.send({
+            user: req.user,
+            pic: req.user.pic.profilePicture
+        })
+    } catch (e) { 
+        res.send(e)
+    }
 })
 //Update user
 router.patch('/update/me',auth ,async (req, res) => { 

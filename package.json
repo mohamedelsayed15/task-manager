@@ -16,9 +16,10 @@
     "bcryptjs": "^2.4.3",
     "express": "^4.18.1",
     "fuzzyset": "^1.0.7",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.8.1",
     "mongoose": "^6.5.2",
+    "multer": "^1.4.5-lts.1",
     "request": "^2.88.2",
     "validator": "^13.7.0"
   }

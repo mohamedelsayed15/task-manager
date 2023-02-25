@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
+const Pic = require('../models/profilePicture')
 /*note about mongodb if u are altering schema
 once it was built u gonna have to delete the collection*/
 const schema = new mongoose.Schema({
@@ -36,13 +37,18 @@ const schema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-
+//virtual field for .populate()
 schema.virtual('tasks', {
     ref: 'Task',
     localField: '_id',
     foreignField:'owner'
 })
-
+schema.virtual('pic', {
+    ref: 'Pic',
+    localField: '_id',
+    foreignField: 'owner',
+    justOne: true
+})
 //login by credentials
 schema.statics.findByCredentials = async (email, password) => {
 
@@ -57,9 +63,9 @@ schema.statics.findByCredentials = async (email, password) => {
 
     return user
 }
+
 //filtering user data 
 //toJSON retrieves the object the shape u want
-
 schema.methods.toJSON = function () {
     
         const userObject = this.toObject()
@@ -79,25 +85,29 @@ schema.pre('save', async function (next) { // provided by mongoose
     }  
     next()
 })
+
 //deleting tasks before a user is removed
 schema.pre('remove', async function (next) { 
 
-    await Task.deleteMany({owner : this._id})
+    await Task.deleteMany({ owner: this._id })
+
+    await Pic.deleteOne({ owner: this._id })
+    
     next()
 })
 
-
-
+//authentication token generation
 schema.methods.genAuthToken = async function () { 
-    
+
     const token = await jwt.sign({ _id: this._id.toString() }, 'hi')
+
     this.tokens = this.tokens.concat({ token })
+
     await this.save()
-    
 
     return token
 }
 
+//===============================================================
 const User = mongoose.model('User', schema)
-
 module.exports= User
