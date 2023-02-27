@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "env-cmd ./config/dev.env node app.js"
   },
   "keywords": [],
   "author": "",
@@ -24,5 +25,8 @@
     "request": "^2.88.2",
     "sharp": "^0.31.3",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "env-cmd": "^8.0.2"
   }
 }

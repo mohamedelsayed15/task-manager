@@ -99,7 +99,7 @@ schema.pre('remove', async function (next) {
 //authentication token generation
 schema.methods.genAuthToken = async function () { 
 
-    const token = await jwt.sign({ _id: this._id.toString() }, 'hi')
+    const token = await jwt.sign({ _id: this._id.toString() }, process.env.JWT)
 
     this.tokens = this.tokens.concat({ token })
 

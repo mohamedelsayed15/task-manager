@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 try {
-    mongoose.connect('mongodb://127.0.0.1:27017/task-manger-api')
+    mongoose.connect(process.env.MONGODB_CONNECTION)
 
 } catch (e) { 
     console.log(e)

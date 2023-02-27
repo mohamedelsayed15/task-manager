@@ -6,7 +6,7 @@ const auth = async (req, res, next) => {
 
         const headerToken = req.header('Authorization').replace('Bearer ', '')
 
-        const decoded = jwt.verify(headerToken, 'hi')
+        const decoded = jwt.verify(headerToken, process.env.JWT)
 
         //find the user
 
