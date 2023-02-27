@@ -13,6 +13,12 @@ const schema = new mongoose.Schema({
 }, {
     timestamps:true
 })
+//virtual pic field for .populate()
+schema.virtual('taskPic', {
+    ref: 'TaskPic',
+    localField: '_id',
+    foreignField: 'owner'
+})
 
 const Task = mongoose.model('Task', schema)
 

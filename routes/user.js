@@ -6,6 +6,8 @@ const auth = require('../middleware/auth')
 const Task = require('../models/task')
 const multer = require('multer')
 const Pic = require('../models/profilePicture')
+const sharp = require('sharp')
+const {afterDeletion,sendWelcomeEmail} = require('../emails/account')
 //=============================================
 //Signup
 router.post('/createUser', async (req, res) => { 
@@ -13,6 +15,8 @@ router.post('/createUser', async (req, res) => {
         const user = await new User(req.body)
 
         await user.save()
+
+        sendWelcomeEmail(user.email,user.name)
 
         const token = await user.genAuthToken()
         
@@ -22,54 +26,6 @@ router.post('/createUser', async (req, res) => {
         res.status(400).send(e)
         console.error(e)
     }
-})
-//multer
-const upload = multer({
-    //dest: 'profilePicture',
-    limits: {
-        fileSize: 5242880 , //1024 * 1024* 1.5 //5mb
-        files: 1,
-    },
-    fileFilter(req, file, cb) {
-
-        if (!file.originalname.match(/\.(jpg|png|gif|jpeg)$/))
-        {
-            cb(new Error('file is not supported'), false) //reject
-        }
-
-        cb(null,true)//accept
-    }
-})
-//Profile picture
-router.post('/me/profilePicture', auth, upload.single('profilePicture'), async (req, res) => {
-    
-    const pic = await new Pic({
-        profilePicture: req.file.buffer,
-        owner:req.user._id
-    })
-
-    await pic.save()
-
-    if (!req.file) { throw new Error('no file were uploaded') }
-    
-    res.send()
-
-}, (error, req, res, next) => { 
-
-    res.status(400).send({ Error: error.message })
-    
-})
-//delete profile picture
-router.get('/delete/profilePicture', auth, async (req, res) => { 
-    
-    const pic = await Pic.findOneAndDelete({ owner: req.user._id })
-    
-    res.send({message:"deleted"})
-
-}, (error, req, res, next) => { 
-
-    res.status(400).send({ Error: error.message })
-    
 })
 //Login
 router.post('/login', async (req,res) => { 
@@ -97,37 +53,13 @@ router.post('/logout', auth, async (req, res) => {
         res.send(e)
     }
 })
-//Logout from all 
-router.post('/supermeLogout', auth, async (req, res) => {
-    try { 
-
-        req.user.tokens = []
-
-        await req.user.save()
-
-        res.send('logged out')
-
-    } catch (e) {
-        res.send(e)
-    }
-}) 
 //Profile
 router.get('/me', auth, async (req, res) => { 
     try {
-
-        await req.user.populate({
-
-            path: 'pic'
-            
-        })
-    
-        res.send({
-            user: req.user,
-            pic: req.user.pic.profilePicture
-        })
+        res.send(req.user )
     } catch (e) { 
         res.send(e)
-    }
+    } 
 })
 //Update user
 router.patch('/update/me',auth ,async (req, res) => { 
@@ -151,6 +83,96 @@ router.patch('/update/me',auth ,async (req, res) => {
         res.status(500).send(e)
     }
 })
+//Logout from all 
+router.post('/supermeLogout', auth, async (req, res) => {
+    try { 
+
+        req.user.tokens = []
+
+        await req.user.save()
+
+        res.send('logged out')
+
+    } catch (e) {
+        res.send(e)
+    }
+}) 
+//multer
+const upload = multer({
+    //dest: 'profilePicture',
+    limits: {
+        fileSize: 5242880 , //1024 * 1024* 5 //5mb
+        files: 1,
+    },
+    fileFilter(req, file, cb) {
+
+        if (!file.originalname.match(/\.(jpg|png|gif|jpeg)$/))
+        {
+            cb(new Error('file is not supported'), false) //reject
+        }
+        cb(null,true)//accept
+    }
+})
+//Profile picture
+router.post('/me/profilePicture', auth, upload.single('profilePicture'), async (req, res) => {
+    
+    if(!req.file) { return res.send({ Error: 'no file were uploaded' }) }
+    
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
+    console.log(buffer)
+        await req.user.populate({
+
+            path: 'pic'
+        })
+        if (!req.user.pic) {
+    
+            const pic = await new Pic({
+                profilePicture: buffer,
+                owner: req.user._id
+            })
+            await pic.save()
+        }else {
+            req.user.pic.profilePicture = buffer
+
+            await req.user.pic.save()
+        }
+        
+        res.send()
+    
+},(error, req, res, next) => { 
+
+    res.status(400).send({ Error: error.message })
+})
+// get profile picture
+router.get('/profilePicture/:id', async (req, res) => { 
+    try {
+        const user = await User.findById(req.params.id)
+
+        await user.populate({
+
+            path: 'pic'
+        }) 
+
+        res.set("Content-type", "image/png")
+
+        res.send(user.pic.profilePicture)
+
+    } catch (e) { 
+        res.send(e)
+    } 
+})
+//delete profile picture
+router.get('/delete/profilePicture', auth, async (req, res) => { 
+    
+    const pic = await Pic.findOneAndDelete({ owner: req.user._id })
+    
+    res.send({message:"deleted"})
+
+}, (error, req, res, next) => { 
+
+    res.status(400).send({ Error: error.message })
+    
+})
 //Delete user
 router.delete('/me',auth,async (req, res) => {
     try {
@@ -160,6 +182,8 @@ router.delete('/me',auth,async (req, res) => {
         const user = await User.findByIdAndDelete(req.user._id)
         */
         await req.user.remove() //*Pre remove to delete tasks on user model*
+
+        afterDeletion(req.user.email,req.user.name)
 
         res.send(req.user)
 

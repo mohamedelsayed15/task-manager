@@ -8,19 +8,22 @@ const Pic = require('../models/profilePicture')
 once it was built u gonna have to delete the collection*/
 const schema = new mongoose.Schema({
 
-    name: {type: String,required: true,trim: true},
-    email: {type: String, required: true,lowercase:true, unique: true,
-            validate(value)
-            {
-            if (!validator.isEmail(value))
-            { throw new Error('invalid email format') }
-            }},
+    name: { type: String, required: true, trim: true },
+    
+    email: {type: String, required: true, lowercase: true, unique: true,
+        
+        validate(value) {
+                
+            if (!validator.isEmail(value)) { throw new Error('invalid email format') }
+        }
+    },
     password: {// note we cant use trim :true as it might be a part of the password
         type: String, required: true, minlength: 7, 
 
         validate(value) {
             if (value.toLowerCase().includes('password')) { throw new Error('password')}
-         }},
+        }
+    },
     age: {
         type: Number,
         required: true,
@@ -37,12 +40,13 @@ const schema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-//virtual field for .populate()
+//virtual tasks field for .populate()
 schema.virtual('tasks', {
     ref: 'Task',
     localField: '_id',
     foreignField:'owner'
 })
+//virtual pic field for .populate()
 schema.virtual('pic', {
     ref: 'Pic',
     localField: '_id',
@@ -63,18 +67,16 @@ schema.statics.findByCredentials = async (email, password) => {
 
     return user
 }
-
 //filtering user data 
 //toJSON retrieves the object the shape u want
 schema.methods.toJSON = function () {
     
-        const userObject = this.toObject()
+        const  userObject = this.toObject()
         delete userObject.password
         delete userObject.tokens
         return userObject
     
 }
-
 //hashing password before use save()
 schema.pre('save', async function (next) { // provided by mongoose
 
@@ -85,7 +87,6 @@ schema.pre('save', async function (next) { // provided by mongoose
     }  
     next()
 })
-
 //deleting tasks before a user is removed
 schema.pre('remove', async function (next) { 
 
@@ -95,7 +96,6 @@ schema.pre('remove', async function (next) {
     
     next()
 })
-
 //authentication token generation
 schema.methods.genAuthToken = async function () { 
 
@@ -107,7 +107,6 @@ schema.methods.genAuthToken = async function () {
 
     return token
 }
-
 //===============================================================
 const User = mongoose.model('User', schema)
 module.exports= User

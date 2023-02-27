@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
 
-    profilePicture: {type: Buffer},
+    profilePicture: { type: Buffer },
 
-    owner: { type: mongoose.Schema.Types.ObjectId,unique: true, required: true , ref: 'User'}
+    owner: { type: mongoose.Schema.Types.ObjectId, required: true , ref: 'User'}
 
 })
 
