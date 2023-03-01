@@ -31,6 +31,6 @@ app.use('/*', (req, res) => { //ERROR 404
 })
 app.listen(process.env.PORT, () => { 
 
-    console.log(`server is up on port :${port}`)
+    console.log(`server is up on port :${process.env.PORT}`)
 
 })
