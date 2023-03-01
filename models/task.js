@@ -17,7 +17,8 @@ const schema = new mongoose.Schema({
 schema.virtual('taskPic', {
     ref: 'TaskPic',
     localField: '_id',
-    foreignField: 'owner'
+    foreignField: 'owner',
+    justOne: true
 })
 
 const Task = mongoose.model('Task', schema)

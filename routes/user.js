@@ -62,7 +62,7 @@ router.get('/me', auth, async (req, res) => {
     } 
 })
 //Update user
-router.patch('/update/me',auth ,async (req, res) => { 
+router.patch('/update/me',auth ,async (req, res) => {
     try {
         const updates = Object.keys(req.body) // transferes the names of properties of an object into an array
         const allowedUpdates = ['name', 'password', 'email', 'age']
@@ -119,7 +119,7 @@ router.post('/me/profilePicture', auth, upload.single('profilePicture'), async (
     if(!req.file) { return res.send({ Error: 'no file were uploaded' }) }
     
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
-    console.log(buffer)
+
         await req.user.populate({
 
             path: 'pic'
@@ -139,12 +139,12 @@ router.post('/me/profilePicture', auth, upload.single('profilePicture'), async (
         
         res.send()
     
-},(error, req, res, next) => { 
+},(error, req, res, next) => {
 
     res.status(400).send({ Error: error.message })
 })
 // get profile picture
-router.get('/profilePicture/:id', async (req, res) => { 
+router.get('/profilePicture/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
 
@@ -162,7 +162,7 @@ router.get('/profilePicture/:id', async (req, res) => {
     } 
 })
 //delete profile picture
-router.get('/delete/profilePicture', auth, async (req, res) => { 
+router.get('/delete/profilePicture', auth, async (req, res) => {
     
     const pic = await Pic.findOneAndDelete({ owner: req.user._id })
     
