@@ -16,7 +16,6 @@ Ctrl+shift+L select all occurance
 const taskRoutes = require('./routes/task')
 const userRoutes = require('./routes/user')
 const app = express();
-const port = process.env.PORT
 app.use(express.json({limit : "1kb"})); //parser
 //-------------------------------------
 
@@ -30,7 +29,7 @@ app.use('/*', (req, res) => { //ERROR 404
 
     res.status(404).send('request was not found')
 })
-app.listen(port, () => { 
+app.listen(process.env.PORT, () => { 
 
     console.log(`server is up on port :${port}`)
 
