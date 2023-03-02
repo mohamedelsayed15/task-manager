@@ -16,7 +16,7 @@ const sendVerificationEmail = (email, name, token) => {
         to: email,
         from: 'mo.elsayed621654@gmail.com',
         subject: `Task app verification`,
-        text: `Hi ${name}!,Please verify your email by clicking the link ${process.env.APP_LINK}verifyMe/${token}`
+        text: `Hi ${name}!,Please verify your email by clicking the link ${process.env.APP_LINK}user/verifyMe/${token}`
     })
     console.log(`${process.env.APP_LINK}verifyMe/${token}`)
 }
@@ -26,7 +26,7 @@ const sendVerificationPassword = (email, name, token) => {
         to: email,
         from: 'mo.elsayed621654@gmail.com',
         subject: `Task app verification`,
-        text: `Hi ${name}!,Please click the link to reset your password ${process.env.APP_LINK}verifyMe/${token}`
+        text: `Hi ${name}!,Please click the link to reset your password ${process.env.APP_LINK}user/verifyMe/${token}`
     })
     console.log(`${process.env.APP_LINK}verifyMe/${token}`)
 }
