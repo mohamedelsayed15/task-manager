@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
 
     name: { type: String, required: true, trim: true },
     
-    email: {type: String, required: true, lowercase: true, unique: true,
+    email: {type: String, required: true,index: { unique: true }, lowercase: true, 
         
         validate(value) {
                 

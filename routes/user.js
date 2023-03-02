@@ -12,6 +12,8 @@ const {afterDeletion,sendWelcomeEmail} = require('../emails/account')
 //Signup
 router.post('/createUser', async (req, res) => { 
     try {
+
+
         const user = await new User(req.body)
 
         await user.save()
@@ -19,7 +21,7 @@ router.post('/createUser', async (req, res) => {
         sendWelcomeEmail(user.email,user.name)
 
         const token = await user.genAuthToken()
-        
+
         res.status(201).send({ user, token })
 
     }catch (e) {
