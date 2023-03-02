@@ -4,8 +4,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
 const Pic = require('../models/profilePicture')
-/*note about mongodb if u are altering schema
-once it was built u gonna have to delete the collection*/
+//==================================================
 const schema = new mongoose.Schema({
 
     name: { type: String, required: true, trim: true },

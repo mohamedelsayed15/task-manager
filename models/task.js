@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
 
     owner: { type: mongoose.Schema.Types.ObjectId, required: true , ref: 'User'}
 
-}, {
+},{
     timestamps:true
 })
 //virtual pic field for .populate()

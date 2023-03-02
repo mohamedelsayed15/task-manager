@@ -21,8 +21,8 @@ const auth = async (req, res, next) => {
 
         if (!user.tokens.some(token => token.token === headerToken)) { throw new Error() }
 
-        // we store the user we brought from the data base rather 
-        // than getting them again in the routehandler
+        // we store the user we brought from the data base rather
+        // than getting them again in the route handler
 
         req.token = headerToken // we add the token to the request by making token property
 

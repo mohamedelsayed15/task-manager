@@ -13,7 +13,6 @@ const {afterDeletion,sendWelcomeEmail} = require('../emails/account')
 router.post('/createUser', async (req, res) => { 
     try {
 
-
         const user = await new User(req.body)
 
         await user.save()
@@ -24,41 +23,29 @@ router.post('/createUser', async (req, res) => {
 
         res.status(201).send({ user, token })
 
-    }catch (e) {
-        res.status(400).send(e)
-        console.error(e)
+    } catch (e) {
+        if (e.code) { return res.status(409).send({ Error: "Account with this email already exists" })}
+        if (e.errors) { return res.status(400).send({Error : "missing information"})}
+        res.status(400).send()
     }
 })
 //Login
 router.post('/login', async (req,res) => { 
     try { 
-        const user = await User.findByCredentials(req.body.email, req.body.password) 
+        const user = await User.findByCredentials(req.body.email, req.body.password)
 
         const token = await user.genAuthToken()
         
         res.send({ user, token })
         
-    } catch (e) { 
-        res.status(404).send({ Error: "couldnt find user" })
-    }
-})
-//Logout
-router.post('/logout', auth, async (req, res) => {
-    try { 
-        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
-
-        await req.user.save()
-
-        res.send('logged out')
-
     } catch (e) {
-        res.send(e)
+        res.status(404).send({ Error: "couldn't find user" })
     }
 })
 //Profile
-router.get('/me', auth, async (req, res) => { 
+router.get('/me', auth, async (req, res) => {
     try {
-        res.send(req.user )
+        res.send(req.user)
     } catch (e) { 
         res.send(e)
     } 
@@ -66,7 +53,7 @@ router.get('/me', auth, async (req, res) => {
 //Update user
 router.patch('/update/me',auth ,async (req, res) => {
     try {
-        const updates = Object.keys(req.body) // transferes the names of properties of an object into an array
+        const updates = Object.keys(req.body) // transfers the names of properties of an object into an array
         const allowedUpdates = ['name', 'password', 'email', 'age']
         // every will return false if any of the returns is false
         const validUpdate = updates.every((update) => {
@@ -85,8 +72,21 @@ router.patch('/update/me',auth ,async (req, res) => {
         res.status(500).send(e)
     }
 })
+//Logout
+router.post('/logout', auth, async (req, res) => {
+    try { 
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
+
+        await req.user.save()
+
+        res.send('logged out')
+
+    } catch (e) {
+        res.send(e)
+    }
+})
 //Logout from all 
-router.post('/supermeLogout', auth, async (req, res) => {
+router.post('/logoutAll', auth, async (req, res) => {
     try { 
 
         req.user.tokens = []

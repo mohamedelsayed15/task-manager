@@ -52,13 +52,13 @@ router.post('/createTask',auth,upload.single('taskPic'),async (req, res) => {
         res.status(400).send(e)
     }
 })
-// VERY IMPORTANT NOTE PLS NOTE THAT PLSSSSSS
+// VERY IMPORTANT NOTE PLS NOTE THAT PLS
 // we have NUMBER OF 2 END POINTS WITH "GET" 
-//one gets id  in parameters and the other doesnt
+// one gets id  in parameters and the other doesn't
 // what happens when u have the one with id in parameters above the other one
 // the application will go and find the one with id as match and then 
 // TAKE THE ID AS "myTasks" which will cause an error
-// so U MAKE THE ONE WITH ID BELOW THE OTHER ONE, TY PLS DONT MAKE THIS MISTAKE AGAIN
+// so U MAKE THE ONE WITH ID BELOW THE OTHER ONE, TY PLS DON'T MAKE THIS MISTAKE AGAIN
 //===================================================================================
 // query ?completed='true'
 // query ?limit=10&skip=30
@@ -97,7 +97,7 @@ router.get('/myTasks', auth, async (req, res) => { //NOTE ME
             }
         })
 
-        //filter tasks to get only ids and their titels 
+        //filter tasks to get only ids and their titles 
 
         const filteredTasks = req.user.tasks.map( task => {
 
@@ -150,8 +150,8 @@ router.patch('/alterTask/:_id', auth,upload.single('taskPic'),async (req, res) =
     try{
         const updates = Object.keys(req.body)
         const allowedUpdates = ["title","description", "completed"]
-        const validupdates = updates.every(update => allowedUpdates.includes(update))
-        if (validupdates === false) { return res.status(404).send({ ERROR: "invalid updates!" }) }
+        const validUpdates = updates.every(update => allowedUpdates.includes(update))
+        if (validUpdates === false) { return res.status(404).send({ ERROR: "invalid updates!" }) }
 
         const task = await Task.findOne({ _id: req.params._id, owner: req.user._id })
 
@@ -186,7 +186,7 @@ router.delete('/:_id',auth ,async (req, res) => {
 
         const task =  await Task.findByIdAndDelete(req.params._id)
 
-        if (!task) { return res.status(404).send({ ERROR: "task were not found" }) }
+        if (!task) { return res.status(404).send({ ERROR: "task were not found" })}
 
         await TaskPic.deletedOne({ owner: req.params._id })
 
