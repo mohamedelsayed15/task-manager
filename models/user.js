@@ -8,16 +8,16 @@ const Pic = require('../models/profilePicture')
 const schema = new mongoose.Schema({
 
     name: { type: String, required: true, trim: true },
-    
+
     email: {type: String, required: true,index: { unique: true }, lowercase: true, 
-        
+
         validate(value) {
-                
-            if (!validator.isEmail(value)) { throw new Error('invalid email format') }
+
+            if (!validator.isEmail(value)) { throw new Error('invalid email format')}
         }
     },
     password: {// note we cant use trim :true as it might be a part of the password
-        type: String, required: true, minlength: 7, 
+        type: String, required: true, minlength: 7,
 
         validate(value) {
             if (value.toLowerCase().includes('password')) { throw new Error('password')}
@@ -35,7 +35,11 @@ const schema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    verificationToken: { type: String },
+
+    verifiedEmail: { type: Boolean , default :false }
+
 }, {
     timestamps: true
 })
@@ -73,8 +77,10 @@ schema.methods.toJSON = function () {
         const  userObject = this.toObject()
         delete userObject.password
         delete userObject.tokens
-        return userObject
+        delete userObject.verificationToken
+        delete userObject.verifiedEmail
     
+        return userObject
 }
 //hashing password before use save()
 schema.pre('save', async function (next) { // provided by mongoose
@@ -83,7 +89,7 @@ schema.pre('save', async function (next) { // provided by mongoose
     if (this.isModified('password')) { 
 
         this.password = await bcrypt.hash(this.password,8)
-    }  
+    }
     next()
 })
 //deleting tasks before a user is removed
@@ -101,6 +107,27 @@ schema.methods.genAuthToken = async function () {
     const token = await jwt.sign({ _id: this._id.toString() }, process.env.JWT)
 
     this.tokens = this.tokens.concat({ token })
+
+    await this.save()
+
+    return token
+}
+//token for E-mail verification
+schema.methods.generateEmailToken = async function () { 
+
+    const token = await jwt.sign({ _id: this._id.toString() }, process.env.JWT_VERIFY_ME,{ expiresIn: '1h' })
+
+    this.verificationToken = token
+
+    await this.save()
+
+    return token
+}
+schema.methods.generatePasswordToken = async function () { 
+
+    const token = await jwt.sign({ _id: this._id.toString() }, process.env.JWT_VERIFY_ME_FOR_PASSWORD,{ expiresIn: '1h' })
+
+    this.verificationToken = token
 
     await this.save()
 

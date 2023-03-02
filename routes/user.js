@@ -3,11 +3,13 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 const User = require('../models/user')
 const auth = require('../middleware/auth')
+const checkEmailToken = require('../middleware/verifyEmail')
+const checkPasswordToken = require('../middleware/verifyForPassword')
 const Task = require('../models/task')
 const multer = require('multer')
 const Pic = require('../models/profilePicture')
 const sharp = require('sharp')
-const {afterDeletion,sendWelcomeEmail} = require('../emails/account')
+const {afterDeletion,sendWelcomeEmail,sendVerificationEmail,sendVerificationPassword} = require('../emails/account')
 //=============================================
 //Signup
 router.post('/createUser', async (req, res) => { 
@@ -15,18 +17,70 @@ router.post('/createUser', async (req, res) => {
 
         const user = await new User(req.body)
 
+        const verificationToken = await user.generateEmailToken()
+
         await user.save()
 
         sendWelcomeEmail(user.email,user.name)
 
         const token = await user.genAuthToken()
 
-        res.status(201).send({ user, token })
+        sendVerificationEmail(user.email , user.name , verificationToken )
+
+        res.status(201).send({message:"Please check your mail"})
 
     } catch (e) {
         if (e.code) { return res.status(409).send({ Error: "Account with this email already exists" })}
-        if (e.errors) { return res.status(400).send({Error : "missing information"})}
+        if (e.errors) { return res.status(400).send({ Error: "missing information" }) }
+        console.log(e)
         res.status(400).send()
+    }
+})
+//check email verification
+router.get('/verifyMe/:token', checkEmailToken, (req,res) => { 
+    try { 
+
+        res.send('verified')
+
+    }catch (e) { 
+
+        res.send(e)
+
+    }
+})
+//request reset password
+router.post('/resetMyPassword', async (req, res) => { 
+    try {
+        const user = await User.findOne({ email: req.body.email })
+
+        if (!user) { throw new Error("couldn't find user") }
+
+        if (user.verifiedEmail !== true) {
+
+            return res.status(400).send({ message: "email is not verified" })
+
+        }
+
+        const verificationToken = await user.generatePasswordToken()
+
+        sendVerificationPassword(user.email, user.name, verificationToken)
+
+        res.send({message:"Please check your mail"})
+
+    } catch (e) {
+        res.status(404).send(e)
+    }
+})
+router.post('/verifyMe/:token', checkPasswordToken,(req, res) => {
+
+    try { 
+
+        res.send({message:"Your password has been reset"})
+
+    }catch (e) { 
+
+        res.send(e)
+
     }
 })
 //Login
