@@ -58,7 +58,7 @@ const afterDeletion = (email, name) => {
         subject: `Task App`,
         text: `We are sorry to hear that you are leaving ${name} ,We would love to know how was your experience. Please send us a feedback ASAP!`
 
-    }, function (error, body) {
+    },function (error, body) {
 
         if (error) { console.log(error)}
     })
