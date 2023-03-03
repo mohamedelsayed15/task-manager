@@ -10,9 +10,11 @@ const checkPasswordToken = async (req, res, next) => {
 
         const user = await User.findById(decoded._id)
 
-        if (!user) { throw new Error()}
+        if (!user) {throw new Error()}
 
-        if (user.verificationToken !== token) { throw new Error()}
+        if (user.verificationToken !== token) {throw new Error() }
+
+        if (user.verifiedEmail !== true) { user.verifiedEmail = true }
 
         user.password = req.body.newPassword
 

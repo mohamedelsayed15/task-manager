@@ -9,7 +9,7 @@ const Task = require('../models/task')
 const multer = require('multer')
 const Pic = require('../models/profilePicture')
 const sharp = require('sharp')
-const {afterDeletion,sendWelcomeEmail,sendVerificationEmail,sendVerificationPassword} = require('../emails/account')
+const {afterDeletion,sendWelcomeEmail,sendVerificationEmail,sendVerificationPassword} = require('../emails/mg')
 //=============================================
 //Signup
 router.post('/createUser', async (req, res) => { 
@@ -37,7 +37,7 @@ router.post('/createUser', async (req, res) => {
     }
 })
 //check email verification
-router.get('/verifyMe/:token', checkEmailToken, (req,res) => { 
+router.get('/verifyMe/:token', checkEmailToken, (req, res) => {
     try { 
 
         res.send('verified')
@@ -45,7 +45,6 @@ router.get('/verifyMe/:token', checkEmailToken, (req,res) => {
     }catch (e) { 
 
         res.send(e)
-
     }
 })
 //request reset password
@@ -53,13 +52,7 @@ router.post('/resetMyPassword', async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email })
 
-        if (!user) { throw new Error("couldn't find user") }
-
-        if (user.verifiedEmail !== true) {
-
-            return res.status(400).send({ message: "email is not verified" })
-
-        }
+        if (!user) { throw new Error("couldn't find user")}
 
         const verificationToken = await user.generatePasswordToken()
 
@@ -71,7 +64,8 @@ router.post('/resetMyPassword', async (req, res) => {
         res.status(404).send(e)
     }
 })
-router.post('/verifyMe/:token', checkPasswordToken,(req, res) => {
+//endpoint for checking user request to reset password
+router.patch('/verifyMe/:token', checkPasswordToken,(req, res) => {
 
     try { 
 
@@ -80,7 +74,6 @@ router.post('/verifyMe/:token', checkPasswordToken,(req, res) => {
     }catch (e) { 
 
         res.send(e)
-
     }
 })
 //Login
