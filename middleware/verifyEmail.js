@@ -12,7 +12,7 @@ const checkEmailToken = async (req, res, next) => {
 
         if (!user) { throw new Error()}
 
-        if (user.verificationToken !== token) { throw new Error() }
+        if (user.verificationToken !== token) { throw new Error()}
 
         user.verifiedEmail = true
 

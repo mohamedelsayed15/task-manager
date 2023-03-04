@@ -59,12 +59,9 @@ const afterDeletion = (email, name) => {
         text: `We are sorry to hear that you are leaving ${name} ,We would love to know how was your experience. Please send us a feedback ASAP!`
 
     },function (error, body) {
-
         if (error) { console.log(error)}
     })
-    console.log(`${process.env.APP_LINK}verifyMe/${token}`)
 }
-
 module.exports = {
     afterDeletion,
     sendWelcomeEmail,

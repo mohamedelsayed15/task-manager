@@ -4,9 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
+    "test": "env-cmd ./config/dev.env jest --watch",
     "start": "node app.js",
     "dev": "env-cmd ./config/dev.env npx nodemon app.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "mohamed el-sayed",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "env-cmd": "^8.0.2",
     "jest": "^29.4.3",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   }
 }

@@ -19,7 +19,10 @@ app.use('/*', (req, res) => { //Default
 
 /* notes
 
-status codes (201 created)(401 unauthorized)(404 not found) (409 duplication of data)
+(403 forbidden from accessing)(201 created)(401 unauthorized)(404 not found) (409 duplication of data)
+
+when a login fails we use (401 unauthorized)
+
 
 status codes defaults (200 accepted) (400 bad request)
 

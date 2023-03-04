@@ -19,11 +19,11 @@ const auth = async (req, res, next) => {
 
         //checking for the token :')
 
-        if (user.verifiedEmail !== true) {throw new Error('Please verify your email')}
+        //if (user.verifiedEmail !== true) {throw new Error('Please verify your email')}
 
         if (!user.tokens.some(token => token.token === headerToken)) { throw new Error() }
 
-        // we store the user we brought from the data base rather
+        // we store the user we brought from the database rather
         // than getting them again in the route handler
 
         req.token = headerToken // we add the token to the request by making token property

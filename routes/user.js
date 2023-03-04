@@ -86,7 +86,7 @@ router.post('/login', async (req,res) => {
         res.send({ user, token })
         
     } catch (e) {
-        res.status(404).send({ Error: "couldn't find user" })
+        res.status(401).send({ Error: "couldn't find user" })
     }
 })
 //Profile
@@ -237,6 +237,7 @@ router.delete('/me',auth,async (req, res) => {
         res.send(req.user)
 
     } catch (e) { 
+        console.log(e)
         res.status(500).send(e)
     }
 })
