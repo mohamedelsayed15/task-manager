@@ -46,7 +46,7 @@ router.post('/createTask',auth,upload.single('taskPic'),async (req, res) => {
             await taskPic.save()
         }
 
-        res.status(201).send()
+        res.status(201).send(task)
     } catch (e) { 
         console.log(e)
         res.status(400).send(e)
@@ -73,7 +73,8 @@ router.get('/myTasks', auth, async (req, res) => { //NOTE ME
 
         match.completed = req.query.completed === 'true'
 
-    }
+        }
+
         const sort = {}
 
         if (req.query.sortBy) { 

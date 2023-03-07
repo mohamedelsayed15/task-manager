@@ -86,9 +86,9 @@ router.post('/login', async (req,res) => {
         const user = await User.findByCredentials(req.body.email, req.body.password)
 
         const token = await user.genAuthToken()
-        
+
         res.send({ user, token })
-        
+
     } catch (e) {
         res.status(401).send({ Error: "couldn't find user" })
     }
@@ -111,7 +111,7 @@ router.patch('/update/me',auth ,async (req, res) => {
             // here we take the body and check if each is in the allowed updates
             return allowedUpdates.includes(update)})
         
-        if (validUpdate === false) { return res.status(404).send({ ERROR: "Invalid Updates!" })}
+        if (validUpdate === false) { return res.status(400).send({ ERROR: "Invalid Updates!" })}
 
         updates.forEach(update => req.user[update] = req.body[update])
 
@@ -236,7 +236,7 @@ router.delete('/me',auth,async (req, res) => {
         */
         await req.user.remove() //*Pre remove to delete tasks on user model*
 
-        afterDeletion(req.user.email,req.user.name)
+        //afterDeletion(req.user.email,req.user.name)
 
         res.send(req.user)
 

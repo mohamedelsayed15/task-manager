@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "env-cmd ./config/dev.env jest --watch",
+    "test": "env-cmd ./config/dev.env jest --watch --runInBand",
     "start": "node app.js",
     "dev": "env-cmd ./config/dev.env npx nodemon app.js"
   },

@@ -1,5 +1,5 @@
 //mail gun for sending emails
-var mailgun = require('mailgun-js')({ apiKey: process.env.MG_API_KEY, domain: process.env.MG_DOMAIN });
+let mailgun = require('mailgun-js')({ apiKey: process.env.MG_API_KEY, domain: process.env.MG_DOMAIN })
 
 //welcome email
 const sendWelcomeEmail = (email, name) => {
