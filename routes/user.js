@@ -27,7 +27,11 @@ router.post('/createUser', async (req, res) => {
 
         sendVerificationEmail(user.email , user.name , verificationToken )
 
-        res.status(201).send({message:"Please check your mail"})
+        res.status(201).send({
+            message: "Please check your mail",
+            user,
+            token
+        })
 
     } catch (e) {
         if (e.code) { return res.status(409).send({ Error: "Account with this email already exists" })}
