@@ -185,15 +185,16 @@ router.patch('/alterTask/:_id', auth,upload.single('taskPic'),async (req, res) =
 router.delete('/:_id',auth ,async (req, res) => {
     try {
 
-        const task =  await Task.findByIdAndDelete(req.params._id)
+        const task =  await Task.findOneAndDelete({ _id: req.params._id, owner: req.user._id })
 
         if (!task) { return res.status(404).send({ ERROR: "task were not found" })}
 
-        await TaskPic.deletedOne({ owner: req.params._id })
+        await TaskPic.deleteOne({ owner: req.params._id })
 
         res.send(task)
 
     } catch (e) { 
+        console.log(e)
         res.status(500).send(e)
     }
 })
