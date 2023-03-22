@@ -7,7 +7,7 @@ The API provides features such as user authentication with JWT, login, sign up,
 integration of images for users and for tasks, database relations between tasks and users, 
 relationship between user and profile image, relationship between task and task image,
 sending emails with Mailgun and Sendgrid, reset password, email verification,
-sorting, and pagination. Passwords are hashed to ensure security.
+sorting, and pagination, validation with joi.js. Passwords are hashed to ensure security.
 
 Installation
 
