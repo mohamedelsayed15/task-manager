@@ -23,12 +23,10 @@ const schema = new mongoose.Schema({
             if (value.toLowerCase().includes('password')) { throw new Error('password')}
         }
     },
-    age: {
-        type: Number,
+    DOB: {
+        type: Date,
         required: true,
-        validate(value) {
-            if (value < 0) { throw new Error('age must be a positive number') }
-        }
+        trim:true
     },
     tokens: [{
         token: {
@@ -59,15 +57,16 @@ schema.virtual('pic', {
 //login by credentials
 schema.statics.findByCredentials = async (email, password) => {
 
-    const user = await User.findOne({ email })
+        const user = await User.findOne({ email })
 
-    if (!user) { throw new Error('unable to find user') }
+        if (!user) { return null }
 
-    const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
 
-    if (!isMatch) { throw new Error('unable to find user') }
+        if (!isMatch) { return null }
 
-    return user
+        return user
+
 }
 //filtering user data 
 //toJSON retrieves the object the shape u want
