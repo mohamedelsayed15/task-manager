@@ -18,6 +18,7 @@ const {
     updateUserValidator
 } = require('../joi-validators/user-validator-with-joi')
 const e = require('express')
+const { find } = require('../models/taskPicture')
 
 //=============================================
 //Signup
@@ -27,6 +28,15 @@ router.post('/createUser', async (req, res) => {
         const value = await signUpValidator.validateAsync(req.body, {
             abortEarly: false
         })
+
+        const findUser = await User.findOne({ email: value.email })
+
+        if (findUser) {
+            return res
+                .status(409)
+                .send({ Error: "Account with this email already exists*" })
+        }
+    
 
         const user = await new User({
             name: value.name,
@@ -53,7 +63,6 @@ router.post('/createUser', async (req, res) => {
 
     } catch (e) {
         console.log(e)
-        if (e.code) { return res.status(409).send({ Error: "Account with this email already exists" })}
         res.status(400).send(e)
     }
 })

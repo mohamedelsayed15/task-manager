@@ -13,14 +13,16 @@ Installation
 
     Clone the repository
     Run npm install to install the dependencies
-    Create a dev.env file in the config directory and add the following environment variables:
+    Create a dev.env file in the config directory and add the following
+    
+environment variables:
 
 
     PORT=3000
     SENDGRID_API_KEY=<sendgrind key>
-    JWT=
-    JWT_VERIFY_ME=
-    JWT_VERIFY_ME_FOR_PASSWORD=
+    JWT=<auth token secret>
+    JWT_VERIFY_ME=<after signup email verification>
+    JWT_VERIFY_ME_FOR_PASSWORD=<forgot password email verification>
     MONGODB_CONNECTION=mongodb://127.0.0.1:27017/task-manger-api
     APP_LINK=https://locahost:3000/
     MG_DOMAIN=<mailgun domain>
